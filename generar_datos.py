@@ -166,8 +166,13 @@ def main():
         e["busqueda"] = (e["codigo"] + " " + " ".join(e["descripciones"])).lower()
 
     datos = {"hojas": leidas, "registros": registros, "indice": entradas}
+    icono = Path(__file__).with_name("icon.svg")
+    svg = icono.read_text(encoding="utf-8").replace("\n", "").replace("#", "%23")
+    svg = svg.replace('"', "'")
+    icono_uri = "data:image/svg+xml," + svg
     json_txt = json.dumps(datos, ensure_ascii=False).replace("</", "<\\/")
-    salida.write_text(PLANTILLA.replace("__DATOS__", json_txt), encoding="utf-8")
+    html = PLANTILLA.replace("__DATOS__", json_txt).replace("__ICONO__", icono_uri)
+    salida.write_text(html, encoding="utf-8")
     print(f"Listo: {len(entradas)} códigos, {len(registros)} registros -> {salida}")
 
 
@@ -177,6 +182,7 @@ PLANTILLA = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Consulta de Causales HFC 2026</title>
+<link rel="icon" type="image/svg+xml" href="__ICONO__">
 <style>
 :root{--azul:#1f4e79;--fondo:#f4f6f9;--borde:#d9dee7;--texto:#1d2330;--gris:#667085;--resalta:#fff3c4}
 *{box-sizing:border-box}
@@ -216,7 +222,7 @@ tr.match td,tr.match th{background:var(--resalta)}
 </head>
 <body>
 <header>
-  <h1>Consulta de causales HFC 2026</h1>
+  <h1><img src="__ICONO__" alt="" width="28" height="28" style="vertical-align:middle;margin-right:8px;border-radius:6px">Consulta de causales HFC 2026</h1>
   <p>Seleccione un código para ver su descripción completa, tal como aparece en la tabla.</p>
 </header>
 <main class="layout">
